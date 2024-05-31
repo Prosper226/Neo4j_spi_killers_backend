@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serials killers</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.0/dist/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network@9.1.0/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        #mynetwork {
+            width: 100%;
+            height: 600px;
+            border: 1px solid lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Serials killers viewer</h1>
+    <div id="mynetwork"></div>
+
+    <script>
+        // Données des tueurs et des victimes avec des vrais noms fictifs
+        const nodes = [
+            { id: "K1", label: "Ted Bundy", type: "killer", title: "Ted Bundy\nType: Killer", color: { background: 'red' } },
+            { id: "K2", label: "Jeffrey Dahmer", type: "killer", title: "Jeffrey Dahmer\nType: Killer", color: { background: 'red' } },
+            { id: "V1", label: "Victim A", type: "victim", title: "Victim A\nType: Victim", color: { background: 'green' } },
+            { id: "V2", label: "Victim B", type: "victim", title: "Victim B\nType: Victim", color: { background: 'green' } },
+            { id: "V3", label: "Victim C", type: "victim", title: "Victim C\nType: Victim", color: { background: 'green' } }
+        ];
+
+        // Liens entre les tueurs et les victimes
+        const edges = [
+            { from: "K1", to: "V1", color: { color: 'blue' } },
+            { from: "K1", to: "V2", color: { color: 'blue' } },
+            { from: "K2", to: "V3", color: { color: 'blue' } },
+            { from: "K1", to: "K2", color: { color: 'yellow' } }
+        ];
+
+        // Configuration du réseau
+        const container = document.getElementById('mynetwork');
+        const data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+        const options = {
+            nodes: {
+                shape: 'dot',
+                size: 16,
+                font: {
+                    size: 14,
+                    color: 'black',
+                    face: 'Tahoma'
+                },
+                borderWidth: 2
+            },
+            edges: {
+                color: { inherit: true },
+                width: 0.75,
+                smooth: {
+                    type: "continuous",
+                },
+            },
+            interaction: {
+                tooltipDelay: 200,
+                hideEdgesOnDrag: true
+            },
+            physics: {
+                stabilization: false,
+                barnesHut: {
+                    gravitationalConstant: -30000,
+                    springLength: 200,
+                }
+            }
+        };
+
+        // Initialisation du réseau
+        const network = new vis.Network(container, data, options);
+
+        // Ajouter des événements pour montrer plus d'infos au survol
+        network.on("hoverNode", function (params) {
+            const nodeId = params.node;
+            const node = data.nodes.get(nodeId);
+            network.body.data.nodes.update({
+                id: nodeId,
+                title: node.title
+            });
+        });
+    </script>
+</body>
+</html>

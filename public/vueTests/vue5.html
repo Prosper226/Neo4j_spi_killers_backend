@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #mynetwork {
+            width: 800px;
+            height: 800px;
+            border: 1px solid lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h2>Static smooth curves - World Cup Network</h2>
+    <div id="mynetwork"></div>
+    <script>
+        var network;
+
+        // Données des tueurs et des victimes avec des vrais noms fictifs
+        const nodes = [
+            { id: "K1", label: "Ted Bundy", type: "killer", title: "Ted Bundy\nType: Killer", color: { background: 'red' } },
+            { id: "K2", label: "Jeffrey Dahmer", type: "killer", title: "Jeffrey Dahmer\nType: Killer", color: { background: 'red' } },
+            { id: "V1", label: "Victim A", type: "victim", title: "Victim A\nType: Victim", color: { background: 'green' } },
+            { id: "V2", label: "Victim B", type: "victim", title: "Victim B\nType: Victim", color: { background: 'green' } },
+            { id: "V3", label: "Victim C", type: "victim", title: "Victim C\nType: Victim", color: { background: 'green' } }
+        ];
+
+        // Liens entre les tueurs et les victimes
+        const edges = [
+            { from: "K1", to: "V1", color: { color: 'blue' } },
+            { from: "K1", to: "V2", color: { color: 'blue' } },
+            { from: "K2", to: "V3", color: { color: 'blue' } },
+            { from: "K1", to: "K2", color: { color: 'yellow' } }
+        ];
+
+        var data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+
+        function redrawAll(data) {
+            
+            
+            var container = document.getElementById("mynetwork");
+            var options = {
+                nodes: {
+                    shape: "dot",
+                    scaling: {
+                        min: 10,
+                        max: 30,
+                    },
+                    font: {
+                        size: 12,
+                        face: "Tahoma",
+                    },
+                },
+                edges: {
+                    color: { inherit: true },
+                    width: 0.15,
+                    smooth: {
+                        type: "continuous",
+                    },
+                },
+                interaction: {
+                    hideEdgesOnDrag: true,
+                    tooltipDelay: 200,
+                },
+                configure: {
+                    filter: function (option, path) {
+                        if (option === "inherit") {
+                            return true;
+                        }
+                        if (option === "type" && path.indexOf("smooth") !== -1) {
+                            return true;
+                        }
+                        if (option === "roundness") {
+                            return true;
+                        }
+                        if (option === "hideEdgesOnDrag") {
+                            return true;
+                        }
+                        if (option === "hideNodesOnDrag") {
+                            return true;
+                        }
+                        return false;
+                    },
+                    container: document.getElementById("optionsContainer"),
+                    showButton: false,
+                },
+                physics: false,
+            };
+
+            // var data = { nodes: nodes, edges: edges };
+            // Note: data is coming from ./data/WorldCup2014.js
+            network = new vis.Network(container, data, options);
+        }
+
+        redrawAll(data);
+
+    </script>
+</body>
+</html>

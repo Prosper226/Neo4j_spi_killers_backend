@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Visualization</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.0/dist/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network@9.1.0/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        #mynetwork {
+            width: 100%;
+            height: 600px;
+            border: 1px solid lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Graph Visualization</h1>
+    <div id="mynetwork"></div>
+
+    <script>
+        // Données des tueurs et des victimes
+        const nodes = [
+            { id: "K1", label: "Killer 1", type: "killer", title: "Killer 1\nType: Killer", color: "red" },
+            { id: "K2", label: "Killer 2", type: "killer", title: "Killer 2\nType: Killer", color: "red" },
+            { id: "V1", label: "Victim 1", type: "victim", title: "Victim 1\nType: Victim", color: "green" },
+            { id: "V2", label: "Victim 2", type: "victim", title: "Victim 2\nType: Victim", color: "green" },
+            { id: "V3", label: "Victim 3", type: "victim", title: "Victim 3\nType: Victim", color: "green" }
+        ];
+
+        // Liens entre les tueurs et les victimes
+        const edges = [
+            { from: "K1", to: "V1" },
+            { from: "K1", to: "V2" },
+            { from: "K2", to: "V3" }
+        ];
+
+        // Configuration du réseau
+        const container = document.getElementById('mynetwork');
+        const data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+        const options = {
+            nodes: {
+                shape: 'dot',
+                size: 16,
+                font: {
+                    size: 14,
+                    color: '#ffffff',
+                },
+                borderWidth: 2
+            },
+            edges: {
+                width: 2
+            },
+            interaction: {
+                tooltipDelay: 200,
+                hideEdgesOnDrag: true
+            },
+            physics: {
+                stabilization: false,
+                barnesHut: {
+                    gravitationalConstant: -30000,
+                    springLength: 200,
+                }
+            }
+        };
+
+        // Initialisation du réseau
+        const network = new vis.Network(container, data, options);
+
+        // Ajouter des événements pour montrer plus d'infos au survol
+        network.on("hoverNode", function (params) {
+            const nodeId = params.node;
+            const node = data.nodes.get(nodeId);
+            network.body.data.nodes.update({
+                id: nodeId,
+                title: node.title
+            });
+        });
+    </script>
+</body>
+</html>
