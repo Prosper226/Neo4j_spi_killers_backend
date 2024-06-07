@@ -5,7 +5,7 @@ class GraphUtil {
             label: `${killer.firstname} ${killer.lastname}`,
             type: "killer",
             title: `${killer.firstname} ${killer.lastname}\nType: Killer`,
-            color: { background: 'red' }
+            color: { background: 'blue' }
         };
     }
 
@@ -15,7 +15,7 @@ class GraphUtil {
             label: `${victim.firstname} ${victim.lastname}`,
             type: "victim",
             title: `${victim.firstname} ${victim.lastname}\nType: Victim`,
-            color: { background: 'green' }
+            color: { background: 'red' }
         };
     }
 
@@ -35,24 +35,24 @@ class GraphUtil {
             label: country.label,
             type: "country",
             title: `Country: ${country.label}`,
-            color: { background: 'blue' }
+            color: { background: 'pink' }
         };
     }
 
     static createContinentNode(continent) {
         return {
             id: continent.id,
-            label: continent.name,
+            label: continent.label,
             type: "continent",
-            title: `Continent: ${continent.name}`,
-            color: { background: 'orange' }
+            title: `Continent: ${continent.label}`,
+            color: { background: 'green' }
         };
     }
 
     static createEdge(from, to, type, fromData, toData) {
         let color;
         let title;
-
+        
         switch (type) {
             case "KILLED_BY":
                 color = { color: 'blue' };
@@ -60,11 +60,11 @@ class GraphUtil {
                 break;
             case "CONVICTED_OF":
                 color = { color: 'purple' };
-                title = `${fromData.firstname} ${fromData.lastname} convicted for ${toData.label}`;
+                title = `${fromData.firstname} ${fromData.lastname} a été condamné pour ${toData.label}`;
                 break;
             case "HAS_NATIONALITY":
                 color = { color: 'green' };
-                title = `${fromData.firstname} ${fromData.lastname} is associated with ${toData.label}`;
+                title = `${fromData.firstname} ${fromData.lastname} a pour nationalité ${toData.label}`;
                 break;
             case "DIED_IN":
                 color = { color: 'black' };
@@ -72,11 +72,11 @@ class GraphUtil {
                 break;
             case "HAS_COUNTRY":
                 color = { color: 'brown' };
-                title = `${toData.name} is part of ${fromData.label}`;
+                title = `${toData.label} is part of ${fromData.label}`;
                 break;
             case "HAS_CONTINENT":
                 color = { color: 'red' };
-                title = `${toData.name} is part of ${fromData.label}`;
+                title = `${toData.label} is part of ${fromData.label}`;
                 break;
             default:
                 color = { color: 'grey' };

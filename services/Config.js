@@ -109,12 +109,13 @@ module.exports = class Config {
         try{
             // Liste des pays du monde
             const sparqlQuery_COUNTRIES = `
-                SELECT DISTINCT ?pays ?paysLabel ?continent ?continentLabel ?capitalLabel ?superficie
+                SELECT DISTINCT ?pays ?paysLabel ?continent ?continentLabel ?capitalLabel ?superficie ?iso
                 WHERE {
                     ?pays wdt:P31 wd:Q6256;    # Instance of country
                         wdt:P30 ?continent;
                         wdt:P36 ?capital;
-                        wdt:P2046 ?superficie.
+                        wdt:P2046 ?superficie;
+                        wdt:P297 ?iso.
                     SERVICE wikibase:label { bd:serviceParam wikibase:language "fr". }
                 }
                 ORDER BY ?paysLabel
@@ -130,7 +131,8 @@ module.exports = class Config {
                     "label": result.paysLabel.value,
                     "area": result.superficie.value,
                     "capital" : result.capitalLabel.value,
-                    "continent" : result.continent.value
+                    "continent" : result.continent.value,
+                    "iso" : result.iso.value,
                 };
                 return object.save(node)
             });

@@ -61,7 +61,12 @@ router.get('/graph/killers-convictions',               graphController.killersCo
 router.get('/graph/killers-countries',                 graphController.killersCountries);
 router.get('/graph/killers-continents',                graphController.killersContinents);
 router.get('/graph/node/:id',                          graphController.getNodeAndConnections);
-
+router.get('/graph/killers',                           graphController.killers);
+router.get('/graph/victims',                           graphController.victims);
+router.get('/graph/countries',                         graphController.countries);
+router.get('/graph/continents',                        graphController.continents);
+router.get('/graph/convictions',                       graphController.convictions);
+router.get('/graph/complete',                          graphController.getCompleteGraph);
 
 
 module.exports = router;

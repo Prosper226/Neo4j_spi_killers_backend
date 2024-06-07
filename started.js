@@ -10,7 +10,7 @@ async function initialized(){
     try{
         // // 1- nettoyer la base de donnees.
         // console.info(`Nettoyage de la base de données.`)
-        // await config.cleanDB('Conviction').then(() => console.info(`Nettoyage de la données de données terminé.`) ).catch(error => { console.error(error); process.exit });
+        // await config.cleanDB('Country').then(() => console.info(`Nettoyage de la données de données terminé.`) ).catch(error => { console.error(error); process.exit });
         // await config.cleanDB('Victim').then(() => console.info(`Nettoyage de la données de données terminé.`) ).catch(error => { console.error(error); process.exit });
         // // 2- Mise en place de contrainte d'integrité
         // console.info(`Mise en place des contraintes d'integrité`)

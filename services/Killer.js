@@ -230,7 +230,8 @@ module.exports = class Killer {
     async getAll(limit = false) {
         const session = neo4jSession.start();
         try {
-            let cypher = `MATCH (k:Killer) RETURN k`;
+            let cypher = `MATCH (k:Killer) RETURN k 
+            ORDER BY k.birthday DESC`;
             if (limit) {
                 cypher += ` LIMIT ${limit}`;
             }
@@ -259,7 +260,7 @@ module.exports = class Killer {
         }
     } 
 
-    async update(id, updates) {
+    async update2(id, updates) {
         const session = neo4jSession.start();
         try {
             const setClauses = Object.keys(updates).map(prop => `k.${prop} = $${prop}`).join(', ');
@@ -429,6 +430,112 @@ module.exports = class Killer {
             throw new Error(`Error fetching victims for killer ${killerId}: ${error.message}`);
         } finally {
             await session.close();
+        }
+    }
+
+
+
+    // ############################################
+    async update(id, node) {
+        const session = neo4jSession.start();
+        try {
+            node.id = id
+            if(node.country){
+                node.nationality = await this.fetchCountryLabel(node.country).then((c) => c.label);
+            }
+            // Construire l'objet des propriétés en n'incluant que les propriétés définies
+            const properties = node
+            // Construire dynamiquement les parties de la requête Cypher
+            const setClauses = Object.keys(properties).map(prop => `k.${prop} = $${prop}`).join(', ');
+            const cypher = `
+                MATCH (k:Killer {id: $id})
+                SET ${setClauses}
+                RETURN k
+            `;
+            const result = await session.run(cypher, properties);
+            // Mise à jour des relations avec le pays
+            if (properties.country) {
+                await this.updateKillerCountryRelationship(properties.id, properties.country);
+            }
+            // Mise à jour des relations avec les condamnations
+            // if (properties.convicted) {
+            //     await this.updateKillerConvictionRelationships(properties.id, properties.convicted);
+            // }
+            // if (properties.convicted) {
+            //     const listConvicted = properties.convicted // .split(',');
+            //     // Utilisation de Promise.all avec map pour gérer chaque condamnation de manière asynchrone
+            //     await Promise.all(listConvicted.map(async (convicted) => {
+            //         // Création de la relation entre le tueur et la condamnation
+            //         await this.updateKillerConvictionRelationships(properties.id, convicted);
+            //     }));
+            // }
+            return result.records.map(record => record.get('k').properties);
+        } catch (error) {
+            throw new Error(`Error updating killer: ${error.message}`);
+        } finally {
+            await session.close();
+        }
+    }
+    
+    async updateKillerCountryRelationship(killerId, countryId) {
+        const session = neo4jSession.start();
+        try {
+            // Supprimer les relations existantes avec le pays
+            const deleteCypher = `
+                MATCH (k:Killer {id: $killerId})-[r:FROM_COUNTRY]->()
+                DELETE r
+            `;
+            await session.run(deleteCypher, { killerId });
+    
+            // Créer la nouvelle relation avec le pays
+            const createCypher = `
+                MATCH (k:Killer {id: $killerId}), (c:Country {id: $countryId})
+                MERGE (k)-[:FROM_COUNTRY]->(c)
+            `;
+            await session.run(createCypher, { killerId, countryId });
+        } catch (error) {
+            throw new Error(`Error updating killer-country relationship: ${error.message}`);
+        } finally {
+            await session.close();
+        }
+    }
+    
+    async updateKillerConvictionRelationships(killerId, newConvictedIds) {
+        const session = neo4jSession.start();
+        try {
+            
+            // Supprimer les relations existantes avec les condamnations
+            const deleteCypher = `
+                MATCH (k:Killer {id: $killerId})-[r:CONVICTED_OF]->()
+                DELETE r
+            `;
+            await session.run(deleteCypher, { killerId });
+    
+            // Créer les nouvelles relations avec les condamnations
+            await Promise.all(newConvictedIds.map(async (convictedId) => {
+                
+                const createCypher = `
+                    MATCH (k:Killer {id: $killerId}), (c:Conviction {id: $convictedId})
+                    MERGE (k)-[:CONVICTED_OF]->(c)
+                `;
+                await session.run(createCypher, { killerId, convictedId });
+            }));
+            // let savedNodes = await Promise.all(promises);
+
+        } catch (error) {
+            throw new Error(`Error updating killer-conviction relationships: ${error.message}`);
+        } finally {
+            await session.close();
+        }
+    }
+    
+    async fetchCountryLabel(countryId) {
+        try{
+            const Country = require('./Country');
+            const countryInstance = new Country();
+            return countryInstance.getById(countryId);
+        }catch(err){
+            return null;
         }
     }
     

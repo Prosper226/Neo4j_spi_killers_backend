@@ -17,7 +17,8 @@ module.exports = class Country {
                 label: node.label,
                 area: node.area,
                 capital: node.capital,
-                continent: continent
+                continent: continent,
+                iso: node.iso
             };
     
             // Parameterized Cypher query
@@ -28,13 +29,15 @@ module.exports = class Country {
                     p.label = $label,
                     p.capital = $capital,
                     p.area = $area,
-                    p.continent = $continent
+                    p.continent = $continent,
+                    p.iso = $iso
                 ON MATCH SET
                     p.uri = $uri,
                     p.label = $label,
                     p.capital = $capital,
                     p.area = $area,
-                    p.continent = $continent
+                    p.continent = $continent,
+                    p.iso = $iso
                 RETURN p
             `;
     

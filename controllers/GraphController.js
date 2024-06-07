@@ -36,7 +36,7 @@ module.exports = class GraphController {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
+    } 
 
     async killersConvictions(req, res) {
         try {
@@ -268,5 +268,148 @@ module.exports = class GraphController {
         }
     }
     
+    async killers(req, res) {
+        try {
+            const killers = await killerService.getAll();
+
+            const nodes = [];
+            const edges = [];
+
+            killers.forEach(killer => {
+                nodes.push(GraphUtil.createKillerNode(killer));
+            });
+
+            res.status(200).json({ nodes, edges });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+    async victims(req, res) {
+        try {
+            const victims = await victimService.getAll();
+
+            const nodes = [];
+            const edges = [];
+
+            victims.forEach(victim => {
+                nodes.push(GraphUtil.createVictimNode(victim));
+            });
+
+            res.status(200).json({ nodes, edges });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async convictions(req, res) {
+        try {
+            const convictions = await convictionService.getAll();
+
+            const nodes = [];
+            const edges = [];
+
+            convictions.forEach(conviction => {
+                nodes.push(GraphUtil.createConvictionNode(conviction));
+            });
+
+            res.status(200).json({ nodes, edges });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async continents(req, res) {
+        try {
+            const continents = await continentService.getAll();
+
+            const nodes = [];
+            const edges = [];
+
+            continents.forEach(continent => {
+                nodes.push(GraphUtil.createContinentNode(continent));
+            });
+
+            res.status(200).json({ nodes, edges });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async countries(req, res) {
+        try {
+            const countries = await countryService.getAll();
+
+            const nodes = [];
+            const edges = [];
+
+            countries.forEach(country => {
+                nodes.push(GraphUtil.createCountryNode(country));
+            });
+
+            res.status(200).json({ nodes, edges });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async getCompleteGraph(req, res) {
+        try {
+            const killers = await killerService.getAll();
+            const victims = await victimService.getAll();
+            const countries = await countryService.getAll();
+            const continents = await continentService.getAll();
+            const convictions = await convictionService.getAll();
+
+            const nodes = [];
+            const edges = [];
+
+            // Ajouter les tueurs et leurs relations
+            killers.forEach(killer => {
+                nodes.push(GraphUtil.createKillerNode(killer));
+                if (killer.country) {
+                    edges.push(GraphUtil.createEdge(killer.id, killer.country, "FROM_COUNTRY", killer, { id: killer.country }));
+                }
+                if (killer.convictions) {
+                    killer.convictions.forEach(convictionId => {
+                        edges.push(GraphUtil.createEdge(killer.id, convictionId, "CONVICTED_OF", killer, { id: convictionId }));
+                    });
+                }
+            });
+
+            // Ajouter les victimes et leurs relations
+            victims.forEach(victim => {
+                nodes.push(GraphUtil.createVictimNode(victim));
+                const killer = killers.find(k => k.id === victim.killer);
+                if (killer) {
+                    edges.push(GraphUtil.createEdge(victim.killer, victim.id, "KILLED_BY", killer, victim));
+                }
+                if (victim.country) {
+                    edges.push(GraphUtil.createEdge(victim.id, victim.country, "FROM_COUNTRY", victim, { id: victim.country }));
+                }
+            });
+
+            // Ajouter les pays et leurs relations
+            countries.forEach(country => {
+                nodes.push(GraphUtil.createCountryNode(country));
+                if (country.continent) {
+                    edges.push(GraphUtil.createEdge(country.id, country.continent, "LOCATED_IN", country, { id: country.continent }));
+                }
+            });
+
+            // Ajouter les continents
+            continents.forEach(continent => {
+                nodes.push(GraphUtil.createContinentNode(continent));
+            });
+
+            // Ajouter les condamnations
+            convictions.forEach(conviction => {
+                nodes.push(GraphUtil.createConvictionNode(conviction));
+            });
+
+            res.status(200).json({ nodes, edges });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
 
 }

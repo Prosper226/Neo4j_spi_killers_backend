@@ -64,9 +64,10 @@ module.exports = class KillerController {
             const id = req.params.id;
             const updates = req.body;
             const killer = await killerInstance.update(id, updates);
-            let result = await serialKillerAPIModel.fromObject(killer).toJSON()
-            res.status(200).json(result);
+            // let result = await serialKillerAPIModel.fromObject(killer).toJSON()
+            res.status(200).json(killer);
         } catch (error) {
+            throw Error(error)
             res.status(500).json({ message: error.message });
         }
     }

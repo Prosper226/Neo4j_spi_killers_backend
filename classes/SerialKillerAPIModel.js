@@ -19,7 +19,7 @@ module.exports = class SerialKillerAPIModel {
             label : `${this.object.firstname} ${this.object.lastname}`,
             image : this.object.image,
             birthday: this.object.birthday,
-            placeOfBirthday: this.object.placeOfBirth,
+            placeOfBirthday: this.object.placeOfBirthday,
             // country: this.object.country,
             nationality: this.object.nationality,
             victimsOfKiller : this.object.victimsOfKiller,
