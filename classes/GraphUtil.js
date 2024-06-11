@@ -1,12 +1,19 @@
 class GraphUtil {
     static createKillerNode(killer) {
-        return {
+        const node = {
             id: killer.id,
             label: `${killer.firstname} ${killer.lastname}`,
             type: "killer",
             title: `${killer.firstname} ${killer.lastname}\nType: Killer`,
             color: { background: 'blue' }
         };
+    
+        if (killer.image) {
+            node.shape = 'circularImage';
+            node.image = killer.image;
+        }
+    
+        return node;
     }
 
     static createVictimNode(victim) {
@@ -30,13 +37,18 @@ class GraphUtil {
     }
 
     static createCountryNode(country) {
-        return {
+        const node = {
             id: country.id,
             label: country.label,
             type: "country",
             title: `Country: ${country.label}`,
             color: { background: 'pink' }
         };
+        if (country.image) {
+            node.shape = 'circularImage';
+            node.image = country.image;
+        }
+        return node
     }
 
     static createContinentNode(continent) {

@@ -20,6 +20,7 @@ router.post('/killers',                                 killerController.create)
 router.put('/killers/:id', (req, res) => killerController.update(req, res));
 router.delete('/killers/:id', (req, res) => killerController.delete(req, res));
 router.get('/killers',                                  killerController.getAll);
+router.get('/killers/with-photos',                      killerController.getAllWithPhotos);
 router.get('/killers/:id',                              killerController.getById);
 router.get('/killers/country/:countryId',               killerController.getByCountry);
 router.get('/killers/continent/:continentId',           killerController.getByContinent);
@@ -67,6 +68,7 @@ router.get('/graph/countries',                         graphController.countries
 router.get('/graph/continents',                        graphController.continents);
 router.get('/graph/convictions',                       graphController.convictions);
 router.get('/graph/complete',                          graphController.getCompleteGraph);
+router.get('/graph/continents-countries',              graphController.continentsCountries);
 
 
 module.exports = router;

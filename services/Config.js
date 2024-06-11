@@ -109,12 +109,13 @@ module.exports = class Config {
         try{
             // Liste des pays du monde
             const sparqlQuery_COUNTRIES = `
-                SELECT DISTINCT ?pays ?paysLabel ?continent ?continentLabel ?capitalLabel ?superficie ?iso
+                SELECT DISTINCT ?pays ?paysLabel ?continent ?continentLabel ?drapeau ?capitalLabel ?superficie ?iso
                 WHERE {
                     ?pays wdt:P31 wd:Q6256;    # Instance of country
                         wdt:P30 ?continent;
                         wdt:P36 ?capital;
                         wdt:P2046 ?superficie;
+                        wdt:P41 ?drapeau;
                         wdt:P297 ?iso.
                     SERVICE wikibase:label { bd:serviceParam wikibase:language "fr". }
                 }
@@ -133,6 +134,7 @@ module.exports = class Config {
                     "capital" : result.capitalLabel.value,
                     "continent" : result.continent.value,
                     "iso" : result.iso.value,
+                    "image": result.drapeau.value
                 };
                 return object.save(node)
             });
@@ -165,10 +167,11 @@ module.exports = class Config {
                                 wdt:P569 ?dateNaissanceTueur;
                                 wdt:P19 ?lieuNaissanceTueur;
                                 wdt:P27 ?nationaliteTueur;
+                                wdt:P18 ?image;
                                 wdt:P1399 ?condamnation.
                     OPTIONAL {
                         ?tueurEnSerie wdt:P1345 ?victimsOfKiller;
-                                wdt:P18 ?image;
+                                #wdt:P18 ?image;
                                 wdt:P2031 ?workPeriodStart;
                                 wdt:P2032 ?workPeriodEnd.
                     }

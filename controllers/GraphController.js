@@ -412,4 +412,32 @@ module.exports = class GraphController {
         }
     }
 
+    async continentsCountries(req, res) {
+        try {
+            const continents = await continentService.getAll();
+            const countries = await countryService.getAll();
+
+            const nodes = [];
+            const edges = [];
+
+            // Add continent nodes
+            continents.forEach(continent => {
+                nodes.push(GraphUtil.createContinentNode(continent));
+            });
+
+            // Add country nodes and edges linking them to their respective continents
+            countries.forEach(country => {
+                const continent = continents.find(c => c.id === country.continent);
+                if (continent) {
+                    nodes.push(GraphUtil.createCountryNode(country));
+                    edges.push(GraphUtil.createEdge(country.id, continent.id, "LOCATED_IN", country, continent));
+                }
+            });
+
+            res.status(200).json({ nodes, edges });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
 }

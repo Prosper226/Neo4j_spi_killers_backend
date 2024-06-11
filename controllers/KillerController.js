@@ -48,6 +48,20 @@ module.exports = class KillerController {
         }
     }
 
+    async getAllWithPhotos(req, res) {
+        try {
+            const limit = req.query.limit ? parseInt(req.query.limit, 10) : false;
+            const killers = await killerInstance.getAll(limit);
+            const killersWithPhotos = killers.filter(killer => killer.image);
+            const result = await Promise.all(killersWithPhotos.map(async killer => {
+                return await serialKillerAPIModel.fromObject(killer).toJSON();
+            }));
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
     async getById(req, res) {
         try {
             const id = req.params.id;

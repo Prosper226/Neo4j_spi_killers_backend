@@ -27,6 +27,7 @@ module.exports = class SerialKillerAPIModel {
             workPeriodEnd : this.object.workPeriodEnd,
             convicted: await this.#checkConvictionsExistence(this.object.convicted),
             // victims : await this.#killerVictimes(this.object.id),
+            summary: await this.#createSummary(this.object)
         };
     }
 
@@ -50,5 +51,29 @@ module.exports = class SerialKillerAPIModel {
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
+    }
+
+    async #createSummary(killer) {
+        const { firstname, lastname, nationality, convicted, victimsOfKiller, birthday, workPeriodStart, workPeriodEnd } = killer;
+        let summary = `${firstname ? firstname : 'Ce tueur'} ${lastname ? lastname : ''}`;
+    
+        if (nationality) {
+            summary += `, originaire de ${nationality}`;
+        }
+        if (convicted) {
+            summary += `, a été condamné pour ${convicted} crimes`;
+        }
+        if (workPeriodStart && workPeriodEnd) {
+            summary += `, et a opéré de ${workPeriodStart} à ${workPeriodEnd}`;
+        }
+        if (victimsOfKiller) {
+            summary += `. Pendant sa carrière criminelle, il a fait ${victimsOfKiller} victimes`;
+        }
+        if (birthday) {
+            summary += `. Né le ${birthday}`;
+        }
+        summary += `.`;
+    
+        return summary;
     }
 }
