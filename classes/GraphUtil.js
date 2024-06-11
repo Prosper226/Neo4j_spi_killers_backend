@@ -1,10 +1,24 @@
 class GraphUtil {
+    static formatDate = (date) => {
+        if(!date){
+            return '--'
+        }
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            // hour: '2-digit',
+            // minute: '2-digit'
+        };
+        return new Date(date).toLocaleString('fr-FR', options);
+    };
+
     static createKillerNode(killer) {
-        const node = {
+        var node = {
             id: killer.id,
             label: `${killer.firstname} ${killer.lastname}`,
             type: "killer",
-            title: `${killer.firstname} ${killer.lastname}\nType: Killer`,
+            title: `${killer.firstname} ${killer.lastname}\n est un tueur en série`,
             color: { background: 'blue' }
         };
     
@@ -12,18 +26,43 @@ class GraphUtil {
             node.shape = 'circularImage';
             node.image = killer.image;
         }
+        if(killer.birthday){
+            node.title += `\nNé le ${this.formatDate(killer.birthday)}`
+        }
+
+        if(killer.workPeriodStart && killer.workPeriodEnd){
+            node.title += `\nIl a sévit au ${killer.nationality} \nentre ${this.formatDate(killer.workPeriodStart)} et ${this.formatDate(killer.workPeriodEnd)} ` 
+        }
+
     
         return node;
     }
 
     static createVictimNode(victim) {
-        return {
+        const node = {
             id: victim.id,
             label: `${victim.firstname} ${victim.lastname}`,
             type: "victim",
-            title: `${victim.firstname} ${victim.lastname}\nType: Victim`,
+            title: `${victim.firstname} ${victim.lastname} est une victime de tueur en serie.`,
             color: { background: 'red' }
         };
+
+        if (victim.image) {
+            node.shape = 'circularImage';
+            node.image = victim.image;
+        }
+        if(victim.birthday){
+            node.title += `\nNé le ${this.formatDate(victim.birthday)}`
+        }
+
+        if(victim.dateOfDeath && victim.countryOfDeathLabel){
+            node.title += `\nTué le ${this.formatDate(victim.dateOfDeath)} au ${victim.countryOfDeathLabel}`
+        }
+        if(victim.killerName){
+            node.title += `\npar ${victim.killerName}`
+        }
+
+        return node
     }
 
     static createConvictionNode(conviction) {
@@ -31,7 +70,7 @@ class GraphUtil {
             id: conviction.id,
             label: conviction.label,
             type: "conviction",
-            title: `Conviction: ${conviction.label}`,
+            title: `Condamnation: ${conviction.label}`,
             color: { background: 'yellow' }
         };
     }
@@ -41,7 +80,7 @@ class GraphUtil {
             id: country.id,
             label: country.label,
             type: "country",
-            title: `Country: ${country.label}`,
+            title: `Pays: ${country.label}`,
             color: { background: 'pink' }
         };
         if (country.image) {
@@ -67,8 +106,8 @@ class GraphUtil {
         
         switch (type) {
             case "KILLED_BY":
-                color = { color: 'blue' };
-                title = `${fromData.firstname} ${fromData.lastname} killed ${toData.firstname} ${toData.lastname}.`;
+                color = { color: 'red' };
+                title = `${fromData.firstname} ${fromData.lastname} a tué ${toData.firstname} ${toData.lastname}.`;
                 break;
             case "CONVICTED_OF":
                 color = { color: 'purple' };
@@ -79,16 +118,16 @@ class GraphUtil {
                 title = `${fromData.firstname} ${fromData.lastname} a pour nationalité ${toData.label}`;
                 break;
             case "DIED_IN":
-                color = { color: 'black' };
-                title = `${fromData.firstname} ${fromData.lastname} died in ${toData.label}`;
+                color = { color: 'yellow' };
+                title = `${fromData.firstname} ${fromData.lastname} est mort au ${toData.label}`;
                 break;
             case "HAS_COUNTRY":
                 color = { color: 'brown' };
-                title = `${toData.label} is part of ${fromData.label}`;
+                title = `${toData.label} contient ${fromData.label}`;
                 break;
             case "HAS_CONTINENT":
-                color = { color: 'red' };
-                title = `${toData.label} is part of ${fromData.label}`;
+                color = { color: 'blue' };
+                title = `${toData.label} est du continent ${fromData.label}`;
                 break;
             default:
                 color = { color: 'grey' };

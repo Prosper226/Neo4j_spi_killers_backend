@@ -354,6 +354,7 @@ module.exports = class GraphController {
 
     async getCompleteGraph(req, res) {
         try {
+            
             const killers = await killerService.getAll();
             const victims = await victimService.getAll();
             const countries = await countryService.getAll();
@@ -367,10 +368,10 @@ module.exports = class GraphController {
             killers.forEach(killer => {
                 nodes.push(GraphUtil.createKillerNode(killer));
                 if (killer.country) {
-                    edges.push(GraphUtil.createEdge(killer.id, killer.country, "FROM_COUNTRY", killer, { id: killer.country }));
+                    edges.push(GraphUtil.createEdge(killer.id, killer.country, "HAS_NATIONALITY", killer, { id: killer.country }));
                 }
-                if (killer.convictions) {
-                    killer.convictions.forEach(convictionId => {
+                if (killer.convicted) {
+                    killer.convicted.forEach(convictionId => {
                         edges.push(GraphUtil.createEdge(killer.id, convictionId, "CONVICTED_OF", killer, { id: convictionId }));
                     });
                 }
@@ -384,7 +385,10 @@ module.exports = class GraphController {
                     edges.push(GraphUtil.createEdge(victim.killer, victim.id, "KILLED_BY", killer, victim));
                 }
                 if (victim.country) {
-                    edges.push(GraphUtil.createEdge(victim.id, victim.country, "FROM_COUNTRY", victim, { id: victim.country }));
+                    edges.push(GraphUtil.createEdge(victim.id, victim.country, "HAS_NATIONALITY", victim, { id: victim.country }));
+                }
+                if (victim.placeOfDeath) {
+                    edges.push(GraphUtil.createEdge(victim.id, victim.placeOfDeath, "DIED_IN", victim, { id: victim.placeOfDeath }));
                 }
             });
 
@@ -392,7 +396,7 @@ module.exports = class GraphController {
             countries.forEach(country => {
                 nodes.push(GraphUtil.createCountryNode(country));
                 if (country.continent) {
-                    edges.push(GraphUtil.createEdge(country.id, country.continent, "LOCATED_IN", country, { id: country.continent }));
+                    edges.push(GraphUtil.createEdge(country.id, country.continent, "HAS_CONTINENT", country, { id: country.continent }));
                 }
             });
 
@@ -430,7 +434,7 @@ module.exports = class GraphController {
                 const continent = continents.find(c => c.id === country.continent);
                 if (continent) {
                     nodes.push(GraphUtil.createCountryNode(country));
-                    edges.push(GraphUtil.createEdge(country.id, continent.id, "LOCATED_IN", country, continent));
+                    edges.push(GraphUtil.createEdge(country.id, continent.id, "HAS_CONTINENT", country, continent));
                 }
             });
 

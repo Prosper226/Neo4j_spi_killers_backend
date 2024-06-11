@@ -18,13 +18,13 @@ module.exports = class SerialKillerAPIModel {
             lastname: this.object.lastname,
             label : `${this.object.firstname} ${this.object.lastname}`,
             image : this.object.image,
-            birthday: this.object.birthday,
+            birthday: this.formatDate(this.object.birthday),
             placeOfBirthday: this.object.placeOfBirthday,
             // country: this.object.country,
             nationality: this.object.nationality,
             victimsOfKiller : this.object.victimsOfKiller,
-            workPeriodStart : this.object.workPeriodStart,
-            workPeriodEnd : this.object.workPeriodEnd,
+            workPeriodStart : this.formatDate(this.object.workPeriodStart),
+            workPeriodEnd : this.formatDate(this.object.workPeriodEnd),
             convicted: await this.#checkConvictionsExistence(this.object.convicted),
             // victims : await this.#killerVictimes(this.object.id),
             summary: await this.#createSummary(this.object)
@@ -61,19 +61,35 @@ module.exports = class SerialKillerAPIModel {
             summary += `, originaire de ${nationality}`;
         }
         if (convicted) {
-            summary += `, a été condamné pour ${convicted} crimes`;
+            summary += `, a été condamné pour ${await this.#checkConvictionsExistence(convicted)} crimes`;
         }
         if (workPeriodStart && workPeriodEnd) {
-            summary += `, et a opéré de ${workPeriodStart} à ${workPeriodEnd}`;
+            summary += `, et a opéré de ${this.formatDate(workPeriodStart)} à ${this.formatDate(workPeriodEnd)}`;
         }
         if (victimsOfKiller) {
             summary += `. Pendant sa carrière criminelle, il a fait ${victimsOfKiller} victimes`;
         }
         if (birthday) {
-            summary += `. Né le ${birthday}`;
+            summary += `. Né le ${this.formatDate(birthday)}`;
         }
         summary += `.`;
     
         return summary;
     }
+
+    formatDate = (date) => {
+        if(!date){
+            return '--'
+        }
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            // hour: '2-digit',
+            // minute: '2-digit'
+        };
+        return new Date(date).toLocaleString('fr-FR', options);
+    };
+
+
 }
