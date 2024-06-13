@@ -36,4 +36,28 @@ module.exports = class VictimController{
             res.status(404).json({ message: error.message });
         }
     }
+
+    async update(req, res) {
+        try {
+            const id = req.params.id;
+            const updates = req.body;
+            const killer = await victimInstance.update(id, updates);
+            // let result = await serialKillerAPIModel.fromObject(killer).toJSON()
+            res.status(200).json(killer);
+        } catch (error) {
+            throw Error(error)
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    async delete(req, res) {
+        try {
+            const id = req.params.id;
+            const result = await victimInstance.delete(id);
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+    
 };

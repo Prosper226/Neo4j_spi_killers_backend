@@ -77,18 +77,32 @@ module.exports = class SerialKillerAPIModel {
         return summary;
     }
 
+    // formatDate = (date) => {
+    //     // return date
+    //     if(!date){
+    //         return '--'
+    //     }
+    //     const options = {
+    //         year: 'numeric',
+    //         month: '2-digit',
+    //         day: '2-digit',
+    //         // hour: '2-digit',
+    //         // minute: '2-digit'
+    //     };
+    //     return new Date(date).toLocaleString('fr-FR', options);
+    // };
+
     formatDate = (date) => {
-        if(!date){
-            return '--'
+        if (!date) {
+            return '--';
         }
-        const options = {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            // hour: '2-digit',
-            // minute: '2-digit'
-        };
-        return new Date(date).toLocaleString('fr-FR', options);
+    
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (`0${d.getMonth() + 1}`).slice(-2); // Ajout de 1 car les mois sont indexés de 0 à 11
+        const day = (`0${d.getDate()}`).slice(-2);
+    
+        return `${year}-${month}-${day}`;
     };
 
 

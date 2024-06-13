@@ -22,7 +22,7 @@ module.exports = class VictimAPIModel {
             placeOfBirthday: this.object.placeOfBirthday,
             country: this.object.country,
             nationality: this.object.nationality,
-            dateOfDeath : this.object.dateOfDeath,
+            dateOfDeath : this.formatDate(this.object.dateOfDeath),
             countryOfDeath : this.object.countryOfDeath,
             placeOfDeath : this.object.placeOfDeath,
             placeOfDeathLabel : this.object.placeOfDeathLabel,
@@ -32,25 +32,16 @@ module.exports = class VictimAPIModel {
         };
     }
 
-    // async  #checkConvictionsExistence(convictionIds) {
-    //     try {
-    //         const Conviction = require('../services/Conviction');
-    //         const convictionInstance = new Conviction();
-    //         const convicted = await convictionInstance.checkConvictionsExistence(convictionIds);
-    //         return convicted.existingLabels
-    //     } catch (error) {
-    //         res.status(400).json({ message: error.message });
-    //     }
-    // }
-
-    // async  #victimVictimes(victimId) {
-    //     try {
-    //         const victim = require('../services/victim');
-    //         const victimInstance = new victim();
-    //         const victims = await victimInstance.getVictimsByvictimId(victimId);
-    //         return victims
-    //     } catch (error) {
-    //         res.status(400).json({ message: error.message });
-    //     }
-    // }
+    formatDate = (date) => {
+        if (!date) {
+            return '--';
+        }
+    
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (`0${d.getMonth() + 1}`).slice(-2); // Ajout de 1 car les mois sont indexés de 0 à 11
+        const day = (`0${d.getDate()}`).slice(-2);
+    
+        return `${year}-${month}-${day}`;
+    };
 }
