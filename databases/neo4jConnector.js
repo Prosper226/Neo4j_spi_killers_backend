@@ -10,8 +10,19 @@ const database =  process.env.DATABASE
 
 
 const driver = neo4j.driver(uri, neo4j.auth.basic(user, password))
-console.info(`Connexion à Neo4j réussie!`)
-console.info(`Database ${database} is selected.`)
+
+async function verifyConnection() {
+    try {
+        await driver.verifyConnectivity();
+        console.info('Connexion à Neo4j réussie!');
+        console.info(`Database ${database} is selected.`);
+    } catch (err) {
+        console.error('Erreur de connexion à Neo4j:', err);
+    }
+}
+
+verifyConnection();
+
 module.exports = {
     driver,
     start: () => driver.session({ database: database }),

@@ -32,12 +32,17 @@ module.exports = class Config {
             }
             // console.log(cypher);
             const result = await session.run(cypher);
-            const summary = result.records[0];
-            const nodesDeleted = summary.get('nodesDeleted').toNumber();
-            const relationshipsDeleted = summary.get('relationshipsDeleted').toNumber();
-            // Resumé de l'operation
-            console.info(`   Deleted ${nodesDeleted} nodes and ${relationshipsDeleted} relationships.`);
-            return { nodesDeleted, relationshipsDeleted };
+            if(result.records.length){
+                const summary = result.records[0];
+                const nodesDeleted = summary.get('nodesDeleted').toNumber();
+                const relationshipsDeleted = summary.get('relationshipsDeleted').toNumber();
+                // Resumé de l'operation
+                console.info(`   Deleted ${nodesDeleted} nodes and ${relationshipsDeleted} relationships.`);
+                return { nodesDeleted, relationshipsDeleted };
+            }else{
+                console.info(`   Database is already empty. Let's go to create anothers nodes and relationships.`);
+                return { nodesDeleted: 0, relationshipsDeleted: 0 };
+            }
         } catch (e) {
             throw new Error(e.message);
         } finally {
@@ -100,6 +105,7 @@ module.exports = class Config {
             console.info(`   Created ${savedNodes.length} Continents nodes.`);
             return savedNodes.length
         }catch(err){
+            console.log(err)
             throw new Error(err)
         }
     }
